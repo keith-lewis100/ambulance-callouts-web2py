@@ -63,47 +63,53 @@ auth.settings.actions_disabled.append('register')
 #########################################################################
 
 db.define_table('ambulance',
-    Field('name', length=120),
-    Field('registration', length=120),
+    Field('name', length=120, notnull=True),
+    Field('registration', length=120, notnull=True),
     format = '%(name)s')
 
 db.define_table('facility',
-    Field('name', length=120),
+    Field('name', length=120, notnull=True),
     format = '%(name)s')
     
 db.define_table('condition',
-    Field('title', length=120),
+    Field('title', length=120, notnull=True),
     format = '%(title)s')
 
 db.define_table('clinician',
-    Field('name', length=120),
+    Field('name', length=120, notnull=True),
     format = '%(name)s')
 
 db.define_table('driver',
-    Field('name', length=120),
+    Field('name', length=120, notnull=True),
     format = '%(name)s')
 
 db.define_table('shift',
     Field('ambulance', 'reference ambulance'),
     Field('driver', 'reference driver'),
-    Field('start_time', 'datetime', required=True),
+    Field('start_time', 'datetime', notnull=True),
+    Field('end_time', 'time', notnull=True),
     Field('start_mileage', 'integer'),
     Field('end_mileage', 'integer'),
     format = '%(ambulance.name)s on %(start_time)s')
 
 db.define_table('journey',
-    Field('ambulance', 'reference ambulance'),
-    Field('family_name', length=30, required=True),
-    Field('given_name', length=30, required=True),
+    Field('ambulance', 'reference ambulance', 
+                requires=IS_EMPTY_OR(IS_IN_DB(db, 'ambulance.id', db.ambulance._format))),
+    Field('family_name', length=30, notnull=True),
+    Field('given_name', length=30, notnull=True),
     Field('start_location', length=30),
-    Field('call_time', 'datetime', required=True),
-    Field('arrival_time', 'datetime', required=False),
-    Field('end_time', 'datetime', required=False),
+    Field('call_date', 'date', notnull=True),
+    Field('call_time', 'time'),
+    Field('dispatch_time', 'time'),
+    Field('arrival_time', 'time'),
+    Field('hc_time', 'time'),
     Field('condition', 'reference condition'),
-    Field('facility', 'reference facility'),
     Field('action', length=120),
+    Field('facility', 'reference facility'),
+    Field('hc_action', length=120),
     Field('outcome', length=120),
     Field('clinician', 'reference clinician',
-      requires=IS_EMPTY_OR(IS_IN_DB(db, 'clinician.id', db.clinician._format))))
+                requires=IS_EMPTY_OR(IS_IN_DB(db, 'clinician.id', db.clinician._format))),
+    Field('notes', 'text'))
 
 
