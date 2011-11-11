@@ -6,7 +6,7 @@
 
 if not request.env.web2py_runtime_gae:     
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL('sqlite://storage.sqlite') 
+    db = DAL('postgres://user:password@localhost:5432/iersdb') 
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore') 
@@ -93,23 +93,21 @@ db.define_table('shift',
     format = '%(ambulance.name)s on %(start_time)s')
 
 db.define_table('journey',
-    Field('ambulance', 'reference ambulance', 
+    Field('ambulance', 'reference ambulance',
                 requires=IS_EMPTY_OR(IS_IN_DB(db, 'ambulance.id', db.ambulance._format))),
     Field('family_name', length=30, notnull=True),
     Field('given_name', length=30, notnull=True),
     Field('start_location', length=30),
     Field('call_date', 'date', notnull=True),
-    Field('call_time', 'time'),
-    Field('dispatch_time', 'time'),
-    Field('arrival_time', 'time'),
-    Field('hc_time', 'time'),
-    Field('condition', 'reference condition'),
-    Field('action', length=120),
-    Field('facility', 'reference facility'),
-    Field('hc_action', length=120),
+    Field('call_time', 'time', comment='time of callout'),
+    Field('dispatch_time', 'time', comment='time vehicle leaves HC'),
+    Field('arrival_time', 'time', comment='time vehicle arrives at patient'),
+    Field('hc_time', 'time', comment='time patient arrives at facility'),
+    Field('condition', 'reference condition', comment='patient condition'),
+    Field('action', length=120, comment='action by driver'),
+    Field('facility', 'reference facility', comment='name of HC or Hospital'),
+    Field('hc_action', length=120, comment='action at HC'),
     Field('outcome', length=120),
-    Field('clinician', 'reference clinician',
+    Field('clinician', 'reference clinician', comment='person in attendance at HC',
                 requires=IS_EMPTY_OR(IS_IN_DB(db, 'clinician.id', db.clinician._format))),
     Field('notes', 'text'))
-
-
