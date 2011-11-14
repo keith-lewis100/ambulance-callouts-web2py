@@ -6,7 +6,8 @@
 
 if not request.env.web2py_runtime_gae:     
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL('postgres://user:password@localhost:5432/iersdb') 
+#    db = DAL('postgres://user:password@localhost:5432/iersdb')
+    db = DAL('sqlite://storage.sqlite')
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore') 
@@ -111,3 +112,5 @@ db.define_table('journey',
     Field('clinician', 'reference clinician', comment='person in attendance at HC',
                 requires=IS_EMPTY_OR(IS_IN_DB(db, 'clinician.id', db.clinician._format))),
     Field('notes', 'text'))
+
+
