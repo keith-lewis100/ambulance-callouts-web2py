@@ -34,6 +34,9 @@ return the journey table or edit/create form
                                            db.journey.ambulance, db.journey.condition], create=can_modify, editable=can_modify,
                             deletable=can_modify, csv=False, searchable=False, ui='jquery-ui')
     return dict(journeys=journeys)
-    
-def user(): return dict(form=auth())
 
+def clinician():
+    clinicians = SQLFORM.grid(db.clinician.id > 0, csv=False, searchable=False, ui='jquery-ui')
+    return dict(table=clinicians)
+
+def user(): return dict(form=auth())
