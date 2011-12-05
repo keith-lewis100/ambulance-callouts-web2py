@@ -64,24 +64,28 @@ auth.settings.actions_disabled.append('register')
 #########################################################################
 
 db.define_table('ambulance',
-    Field('name', length=120, notnull=True),
+    Field('name', length=120, unique=True, notnull=True),
     Field('registration', length=120, notnull=True),
     format = '%(name)s')
 
 db.define_table('facility',
-    Field('name', length=120, notnull=True),
+    Field('name', length=120, unique=True, notnull=True),
     format = '%(name)s')
     
 db.define_table('condition',
-    Field('title', length=120, notnull=True),
+    Field('title', length=120, unique=True, notnull=True),
     format = '%(title)s')
 
 db.define_table('clinician',
-    Field('name', length=120, notnull=True),
+    Field('name', length=120, unique=True, notnull=True),
     format = '%(name)s')
 
 db.define_table('driver',
-    Field('name', length=120, notnull=True),
+    Field('name', length=120, unique=True, notnull=True),
+    format = '%(name)s')
+
+db.define_table('action',
+    Field('name', length=120, unique=True, notnull=True),
     format = '%(name)s')
 
 db.define_table('shift',
@@ -105,7 +109,8 @@ db.define_table('journey',
     Field('arrival_time', 'time', comment='time vehicle arrives at patient'),
     Field('hc_time', 'time', comment='time patient arrives at facility'),
     Field('condition', 'reference condition', comment='patient condition'),
-    Field('action', length=120, comment='action by driver'),
+    Field('amb_action', 'reference action', comment='action by driver',
+                requires=IS_EMPTY_OR(IS_IN_DB(db, 'action.id', db.action._format))),
     Field('facility', 'reference facility', comment='name of HC or Hospital'),
     Field('hc_action', length=120, comment='action at HC'),
     Field('outcome', length=120),
