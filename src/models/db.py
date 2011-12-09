@@ -64,28 +64,47 @@ auth.settings.actions_disabled.append('register')
 #########################################################################
 
 db.define_table('ambulance',
-    Field('name', length=120, unique=True, notnull=True),
+    Field('name', length=30, unique=True, notnull=True),
     Field('registration', length=120, notnull=True),
     format = '%(name)s')
 
 db.define_table('facility',
-    Field('name', length=120, unique=True, notnull=True),
+    Field('name', length=30, unique=True, notnull=True),
     format = '%(name)s')
     
 db.define_table('condition',
-    Field('title', length=120, unique=True, notnull=True),
+    Field('title', length=80, unique=True, notnull=True),
     format = '%(title)s')
 
 db.define_table('clinician',
-    Field('name', length=120, unique=True, notnull=True),
+    Field('name', length=80, unique=True, notnull=True),
     format = '%(name)s')
 
 db.define_table('driver',
-    Field('name', length=120, unique=True, notnull=True),
+    Field('name', length=80, unique=True, notnull=True),
     format = '%(name)s')
 
 db.define_table('action',
-    Field('name', length=120, unique=True, notnull=True),
+    Field('name', length=80, unique=True, notnull=True),
+    format = '%(name)s')
+
+db.define_table('district',
+    Field('name', length=30, unique=True, notnull=True),
+    format = '%(name)s')
+
+db.define_table('sub-county',
+    Field('name', length=30, unique=True, notnull=True),
+    Field('district', 'reference district'),
+    format = '%(name)s')
+
+db.define_table('parish',
+    Field('name', length=30, unique=True, notnull=True),
+    Field('sub-county', 'reference sub-county'),
+    format = '%(name)s')
+
+db.define_table('village',
+    Field('name', length=30, unique=True, notnull=True),
+    Field('parish', 'reference parish'),
     format = '%(name)s')
 
 db.define_table('shift',
