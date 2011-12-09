@@ -92,18 +92,18 @@ db.define_table('district',
     Field('name', length=30, unique=True, notnull=True),
     format = '%(name)s')
 
-db.define_table('sub-county',
-    Field('name', length=30, unique=True, notnull=True),
+db.define_table('subCounty',
+    Field('name', length=30, notnull=True),
     Field('district', 'reference district'),
     format = '%(name)s')
 
 db.define_table('parish',
-    Field('name', length=30, unique=True, notnull=True),
-    Field('sub-county', 'reference sub-county'),
+    Field('name', length=30, notnull=True),
+    Field('subCounty', 'reference subCounty'),
     format = '%(name)s')
 
 db.define_table('village',
-    Field('name', length=30, unique=True, notnull=True),
+    Field('name', length=30, notnull=True),
     Field('parish', 'reference parish'),
     format = '%(name)s')
 
