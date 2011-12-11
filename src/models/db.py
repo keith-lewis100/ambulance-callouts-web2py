@@ -95,17 +95,17 @@ db.define_table('district',
 db.define_table('subCounty',
     Field('name', length=30, notnull=True),
     Field('district', 'reference district'),
-    format = '%(name)s')
+    format = lambda r: (r.district, r.name))
 
 db.define_table('parish',
     Field('name', length=30, notnull=True),
     Field('subCounty', 'reference subCounty'),
-    format = '%(name)s')
+    format = lambda r: (r.subCounty, r.name))
 
 db.define_table('village',
     Field('name', length=30, notnull=True),
     Field('parish', 'reference parish'),
-    format = '%(name)s')
+    format = lambda r: (r.parish, r.name))
 
 db.define_table('shift',
     Field('ambulance', 'reference ambulance'),
