@@ -39,4 +39,5 @@ def index():
         response.flash = 'form accepted'
     elif form.errors:
         response.flash = 'form has errors'
+    response.files.append(URL('static', 'js/cascade.js'))
     return dict(form=form)
