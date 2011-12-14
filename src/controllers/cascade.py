@@ -2,7 +2,7 @@
 
 #import widgets
 
-def buildSelect(field, wrapper):
+def buildSelect(field, value, wrapper):
     requires = field.requires
     options = []
     for (k, v) in requires.options(True):
@@ -12,7 +12,7 @@ def buildSelect(field, wrapper):
             v = v[1]
         options.append(OPTION(v, _value=k, _class=optClass))
 
-    attr = FormWidget._attributes(field, {})
+    attr = FormWidget._attributes(field, {'value': value})
     wrapper.append(SELECT(*options, **attr))
 
 class CascadingSelect(FormWidget):
@@ -23,8 +23,8 @@ class CascadingSelect(FormWidget):
         tableId = '%s_%s_cascade' % (field._tablename, field.name)
         wrapper = TABLE(_id = tableId)
         for parent in self.parents:
-            buildSelect(parent, wrapper)
-        buildSelect(field, wrapper)
+            buildSelect(parent, '', wrapper)
+        buildSelect(field, value, wrapper)
         return wrapper
 
 def index():
