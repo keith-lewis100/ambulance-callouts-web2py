@@ -76,9 +76,9 @@ db.define_table('condition',
     Field('title', length=80, unique=True, notnull=True),
     format = '%(title)s')
 
-db.define_table('clinician',
-    Field('name', length=80, unique=True, notnull=True),
-    format = '%(name)s')
+#db.define_table('clinician',
+#    Field('name', length=80, unique=True, notnull=True),
+#    format = '%(name)s')
 
 db.define_table('driver',
     Field('name', length=80, unique=True, notnull=True),
@@ -117,11 +117,14 @@ db.define_table('shift',
     format = '%(ambulance.name)s on %(start_time)s')
 
 db.define_table('journey',
-    Field('ambulance', 'reference ambulance',
-                requires=IS_EMPTY_OR(IS_IN_DB(db, 'ambulance.id', db.ambulance._format))),
+    Field('ambulance', 'reference ambulance'),
     Field('family_name', length=30, notnull=True),
     Field('given_name', length=30, notnull=True),
-    Field('start_location', length=30),
+    Field('age', 'integer', requires=IS_INT_IN_RANGE(0, 121), notnull=True),
+    Field('sex', requires=IS_IN_SET(['Male','Female']), widget=SQLFORM.widgets.radio.widget,
+                 notnull=True),
+    Field('maternity', 'boolean', default=False, notnull=True),
+#    Field('start_location', length=30),
     Field('call_date', 'date', notnull=True),
     Field('call_time', 'time', comment='time of callout'),
     Field('dispatch_time', 'time', comment='time vehicle leaves HC'),
@@ -131,10 +134,8 @@ db.define_table('journey',
     Field('amb_action', 'reference action', comment='action by driver',
                 requires=IS_EMPTY_OR(IS_IN_DB(db, 'action.id', db.action._format))),
     Field('facility', 'reference facility', comment='name of HC or Hospital'),
-    Field('hc_action', length=120, comment='action at HC'),
+#    Field('hc_action', length=120, comment='action at HC'),
     Field('outcome', length=120),
-    Field('clinician', 'reference clinician', comment='person in attendance at HC',
-                requires=IS_EMPTY_OR(IS_IN_DB(db, 'clinician.id', db.clinician._format))),
+#    Field('clinician', 'reference clinician', comment='person in attendance at HC',
+#                requires=IS_EMPTY_OR(IS_IN_DB(db, 'clinician.id', db.clinician._format))),
     Field('notes', 'text'))
-
-

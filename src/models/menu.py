@@ -33,7 +33,8 @@ response.menu = [
 def _():
     # shortcuts
     app = request.application
-    ctr = request.controller    
+    ctr = request.controller
+    response.menu+=[(T('Journeys'), False, URL('journey','index'), [])]
     # useful links to internal admin and appadmin pages
     response.menu+=[
         (T('This App'),False, 
