@@ -3,3 +3,12 @@
 <h1>Journeys</h1>
 {{=journeys}}
 
+<script>
+jQuery(document).ready(function(){
+   jQuery('#journey_sex').change(function(){
+        var isMale = jQuery('#journey_sex').val() == 'Male';
+        jQuery('#journey_maternity').attr('readonly', isMale);
+   });
+});
+</script>
+
