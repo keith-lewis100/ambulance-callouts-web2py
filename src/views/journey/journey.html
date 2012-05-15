@@ -4,11 +4,17 @@
 {{=journeys}}
 
 <script>
+function modifyMaternity(){
+        var sex = jQuery('input:radio[name=sex]:checked').val();
+        if (sex == 'Male')
+           jQuery('#journey_maternity__row').hide();
+        else
+           jQuery('#journey_maternity__row').show();
+   }
+
 jQuery(document).ready(function(){
-   jQuery('#journey_sex').change(function(){
-        var isMale = jQuery('#journey_sex').val() == 'Male';
-        jQuery('#journey_maternity').attr('readonly', isMale);
-   });
+   modifyMaternity();
+   jQuery('input:radio').change(modifyMaternity);
 });
 </script>
 
