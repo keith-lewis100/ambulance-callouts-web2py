@@ -30,6 +30,7 @@ response.menu = [
            (T('Conditions'), False, URL('manage', 'condition'), []),
            (T('Actions'), False, URL('manage', 'action'), []),
            (T('Ambulances'), False, URL('manage', 'ambulance'), []),
+           (T('Drivers'), False, URL('manage', 'driver'), []),
            (T('Facilities'), False, URL('manage', 'facility'), [])])
     ]
 

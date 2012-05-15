@@ -16,6 +16,9 @@ def condition():
 def facility():
     return name_grid(db.facility)
 
+def driver():
+    return name_grid(db.driver)
+
 def name_grid(table):
     """
 return the ambulance table or edit/create form
