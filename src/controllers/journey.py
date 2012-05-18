@@ -36,7 +36,9 @@ return the journey table or edit/create form
         query = query & (db.journey.ambulance == session.ambulance)
         db.journey.ambulance.default = session.ambulance
 
-    journeys = SQLFORM.grid(query, fields=[db.journey.id, db.journey.call_date, db.journey.hc_time, db.journey.family_name,
-                                           db.journey.ambulance, db.journey.condition], create=can_modify, editable=can_modify,
-                            deletable=can_modify, csv=False, searchable=False, ui='jquery-ui')
+    journeys = SQLFORM.grid(query, 
+                            fields=[db.journey.id, db.journey.call_date, db.journey.hc_time,
+                                    db.journey.family_name, db.journey.ambulance, db.journey.condition],
+                            create=can_modify, editable=can_modify, deletable=can_modify, 
+                            csv=False, searchable=False, ui='jquery-ui')
     return dict(journeys=journeys)
