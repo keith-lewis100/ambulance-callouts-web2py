@@ -20,8 +20,8 @@ return the shift table or edit/create form
     """
     query = db.shift.id > 0
     if session.date:
-        query = query & (db.shift.call_date == session.date)
-        db.shift.call_date.default = session.date
+        query = query & (db.shift.date == session.date)
+        db.shift.date.default = session.date
     if session.ambulance:
         query = query & (db.shift.ambulance == session.ambulance)
         db.shift.ambulance.default = session.ambulance
