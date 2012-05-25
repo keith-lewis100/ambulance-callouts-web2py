@@ -735,3 +735,12 @@ a.button:hover {
 .web2py_paginator ul li.current a {
     font-weight: bold !important;
 }
+
+a { color: #d19405; }
+.header h1 { color: #349C01; }
+.header h2 { color: white; font-style: italic; font-size: 14px;}
+.statusbar { background: #333333; border-bottom: 5px #349C01 solid; }
+.statusbar a { color: white; }
+.footer { border-top: 5px #349C01 solid; }
+//body #content {background-color: #a1a5aa;}
+//.web2py_grid tr:hover {background-color: #8da8c8; }
