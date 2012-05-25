@@ -1,7 +1,7 @@
 @auth.requires_login()
 def index():
     form = SQLFORM.factory(
-        Field('date', 'date'),
+        Field('date', 'date', required=True),
         Field('ambulance', default=session.ambulance,
               requires=IS_EMPTY_OR(IS_IN_DB(db, 'ambulance.id',
                                             db.ambulance._format))))
@@ -9,12 +9,15 @@ def index():
         response.flash = 'form accepted'
         session.date = form.vars.date
         session.ambulance = form.vars.ambulance
-        redirect(URL('shift.html'))
+        redirect(URL('shifts'))
     elif form.errors:
         response.flash = 'form has errors'
     return dict(form=form)
 
-def shift():
+def link_journeys(r):
+    return A('goto journeys', _href=URL('journey', 'journeys', vars=dict(shift=r.id)))
+
+def shifts():
     """
 return the shift table or edit/create form
     """
@@ -28,5 +31,5 @@ return the shift table or edit/create form
 
     grid = SQLFORM.grid(query, fields=[db.shift.id, db.shift.date, db.shift.start_time, 
                  db.shift.ambulance, db.shift.driver], csv=False, 
-                 searchable=False, ui='jquery-ui')
+                 searchable=False, ui='jquery-ui', links=[link_journeys])
     return dict(grid=grid)

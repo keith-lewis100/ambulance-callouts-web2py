@@ -6,7 +6,7 @@
 #########################################################################
 
 response.title = request.application
-response.subtitle = T('customize me!')
+response.subtitle = T('collecting data for PONT')
 
 ## read more at http://dev.w3.org/html5/markup/meta.name.html
 response.meta.author = 'Your Name <you@example.com>'
@@ -24,7 +24,6 @@ response.google_analytics_id = None
 
 response.menu = [
     (T('Home'), False, URL('default','index'), []),
-    (T('Journeys'), False, URL('journey','index'), []),
     (T('Shifts'), False, URL('shift', 'index'), []),
     (T('Manage'), False, None, [
            (T('Conditions'), False, URL('manage', 'condition'), []),
