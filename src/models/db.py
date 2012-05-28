@@ -64,12 +64,12 @@ auth.settings.actions_disabled.append('register')
 #########################################################################
 
 db.define_table('ambulance',
-    Field('name', length=30, unique=True, notnull=True),
     Field('registration', length=120, notnull=True),
-    format = '%(name)s')
+    format = '%(registration)s')
 
 db.define_table('facility',
     Field('name', length=30, unique=True, notnull=True),
+    Field('stationed_ambulance', 'reference ambulance'),
     format = '%(name)s')
     
 db.define_table('condition',
@@ -108,6 +108,7 @@ db.define_table('village',
     format = lambda r: (r.parish, r.name))
 
 db.define_table('shift',
+    Field('station', 'reference facility'),
     Field('ambulance', 'reference ambulance'),
     Field('driver', 'reference driver'),
     Field('date', 'date', notnull=True),
@@ -115,7 +116,7 @@ db.define_table('shift',
     Field('end_time', 'time', notnull=True),
     Field('start_mileage', 'integer'),
     Field('end_mileage', 'integer'),
-    format = lambda r : '%s on %s at %s' % (r.ambulance.name, r.date, r.start_time))
+    format = lambda r : '%s on %s at %s' % (r.station.name, r.date, r.start_time))
 
 db.define_table('journey',
     Field('shift', 'reference shift'),

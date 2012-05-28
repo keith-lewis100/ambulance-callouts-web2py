@@ -9,7 +9,6 @@ def action():
 def condition():
     table = db.condition
     grid = SQLFORM.grid(table.id > 0, 
-                              fields=[table.id, table.title], 
                               csv=False, searchable=False, ui='jquery-ui')
     return dict(grid=grid)
 
@@ -24,6 +23,5 @@ def name_grid(table):
 return the ambulance table or edit/create form
     """
     grid = SQLFORM.grid(table.id > 0, 
-                              fields=[table.id, table.name], 
                               csv=False, searchable=False, ui='jquery-ui')
     return dict(grid=grid)
