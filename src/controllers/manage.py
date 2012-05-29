@@ -9,6 +9,6 @@ return the grid for the specified table
                        'facility']:
        return "invalid table"
     table = db[table_name]
-    grid = SQLFORM.grid(table.id > 0, 
+    grid = SQLFORM.grid(table.id > 0, args=request.args[:1],
                               csv=False, searchable=False, ui='jquery-ui')
     return dict(grid=grid)

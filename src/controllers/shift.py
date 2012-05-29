@@ -27,16 +27,18 @@ return the shift table or edit/create form
     if request.vars.daydelta:
         delta = timedelta(int(request.vars.daydelta))
         session.date = session.date + delta
-    query = (db.shift.date == session.date)
 
+    query = (db.shift.date == session.date)
     db.shift.date.default = session.date
+    session.shift = None # reset here - the user will then set it by selecting a shift
+    stationname = T('Any')
+
     if session.station:
         query = query & (db.shift.station == session.station)
         db.shift.station.default = session.station
         db.shift.ambulance.default = db.facility[session.station].stationed_ambulance        
-    stationname = T('Any')
-    if session.station:
         stationname = db.facility[session.station].name
+
     grid = SQLFORM.grid(query, fields=[db.shift.id, db.shift.date, db.shift.start_time, 
                  db.shift.station, db.shift.driver], csv=False, 
                  searchable=False, ui='jquery-ui', links=[link_journeys])
