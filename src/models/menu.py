@@ -26,10 +26,10 @@ response.menu = [
     (T('Home'), False, URL('default','index'), []),
     (T('Shifts'), False, URL('shift', 'index'), []),
     (T('Manage'), False, None, [
-           (T('Conditions'), False, URL('manage', 'condition'), []),
-           (T('Actions'), False, URL('manage', 'action'), []),
-           (T('Ambulances'), False, URL('manage', 'ambulance'), []),
-           (T('Drivers'), False, URL('manage', 'driver'), []),
-           (T('Facilities'), False, URL('manage', 'facility'), [])])
+           (T('Conditions'), False, URL('manage', 'table', args='condition'), []),
+           (T('Actions'), False, URL('manage', 'table', args='action'), []),
+           (T('Ambulances'), False, URL('manage', 'table', args='ambulance'), []),
+           (T('Drivers'), False, URL('manage', 'table', args='driver'), []),
+           (T('Facilities'), False, URL('manage', 'table', args='facility'), [])])
     ]
 

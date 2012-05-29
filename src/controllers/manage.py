@@ -1,27 +1,14 @@
 # -*- coding: utf-8 -*-
 
-def ambulance():
-    return name_grid(db.ambulance)
-
-def action():
-    return name_grid(db.action)
-
-def condition():
-    table = db.condition
-    grid = SQLFORM.grid(table.id > 0, 
-                              csv=False, searchable=False, ui='jquery-ui')
-    return dict(grid=grid)
-
-def facility():
-    return name_grid(db.facility)
-
-def driver():
-    return name_grid(db.driver)
-
-def name_grid(table):
+def table():
     """
-return the ambulance table or edit/create form
+return the grid for the specified table
     """
+    table_name = request.args[0]
+    if not table_name in ['condition', 'action', 'ambulance', 'driver',
+                       'facility']:
+       return "invalid table"
+    table = db[table_name]
     grid = SQLFORM.grid(table.id > 0, 
                               csv=False, searchable=False, ui='jquery-ui')
     return dict(grid=grid)
