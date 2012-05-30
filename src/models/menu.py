@@ -24,7 +24,7 @@ response.google_analytics_id = None
 
 response.menu = [
     (T('Home'), False, URL('default','index'), []),
-    (T('Shifts'), False, URL('shift', 'index'), []),
+    (T('Shifts/Journeys'), False, URL('shift', 'index'), []),
     (T('Manage'), False, None, [
            (T('Conditions'), False, URL('manage', 'table', args='condition'), []),
            (T('Actions'), False, URL('manage', 'table', args='action'), []),

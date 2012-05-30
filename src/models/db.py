@@ -64,12 +64,14 @@ auth.settings.actions_disabled.append('register')
 #########################################################################
 
 db.define_table('ambulance',
-    Field('registration', length=120, notnull=True),
+    Field('registration', length=30, unique=True, notnull=True),
     format = '%(registration)s')
 
 db.define_table('facility',
     Field('name', length=30, unique=True, notnull=True),
-    Field('stationed_ambulance', 'reference ambulance'),
+    Field('stationed_ambulance', 'reference ambulance',
+                  requires=IS_EMPTY_OR(IS_IN_DB(db, 'ambulance.id', db.ambulance._format)),
+                  represent=lambda id, row: id != None and db.ambulance[id].registration or ''),
     format = '%(name)s')
     
 db.define_table('condition',
@@ -81,7 +83,7 @@ db.define_table('condition',
 #    format = '%(name)s')
 
 db.define_table('driver',
-    Field('name', length=80, unique=True, notnull=True),
+    Field('name', length=30, unique=True, notnull=True),
     format = '%(name)s')
 
 db.define_table('action',
@@ -126,19 +128,17 @@ db.define_table('journey',
     Field('sex', requires=IS_IN_SET(['Male','Female']), widget=SQLFORM.widgets.radio.widget,
                  notnull=True),
     Field('maternity', 'boolean', default=False, notnull=True),
+    Field('used_stretcher', 'boolean'),
+    Field('used_cycle', 'boolean'),
 #    Field('start_location', length=30),
     Field('call_time', 'time', comment='time of callout'),
     Field('dispatch_time', 'time', comment='time vehicle leaves HC'),
     Field('arrival_time', 'time', comment='time vehicle arrives at patient'),
     Field('hc_time', 'time', notnull=True, comment='time patient arrives at facility'),
-    Field('used_stretcher', 'boolean'),
-    Field('used_cycle', 'boolean'),
     Field('condition', 'reference condition', comment='patient condition'),
     Field('amb_action', 'reference action', comment='action by driver',
-                requires=IS_EMPTY_OR(IS_IN_DB(db, 'action.id', db.action._format))),
+                requires=IS_EMPTY_OR(IS_IN_DB(db, 'action.id', db.action._format)),
+                represent=lambda id, row: id != None and db.action[id].name or ''),
     Field('facility', 'reference facility', comment='name of HC or Hospital'),
-#    Field('hc_action', length=120, comment='action at HC'),
     Field('outcome', length=120),
-#    Field('clinician', 'reference clinician', comment='person in attendance at HC',
-#                requires=IS_EMPTY_OR(IS_IN_DB(db, 'clinician.id', db.clinician._format))),
     Field('notes', 'text'))

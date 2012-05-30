@@ -4,12 +4,12 @@ from datetime import timedelta
 def index():
     form = SQLFORM.factory(
         Field('date', 'date', requires=IS_DATE()),
-        Field('station', default=session.station),
+        Field('station', default=session.station,
               requires=IS_EMPTY_OR(IS_IN_DB(db, 'facility.id',
-                                            db.facility._format)))
+                                            db.facility._format))))
 
     if form.process().accepted:
-        response.flash = 'form accepted'
+        response.flash = 'search started'
         session.date = form.vars.date
         session.station = form.vars.station
         redirect(URL('shifts'))
