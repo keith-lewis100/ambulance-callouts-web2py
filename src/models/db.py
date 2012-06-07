@@ -90,25 +90,6 @@ db.define_table('action',
     Field('name', length=80, unique=True, notnull=True),
     format = '%(name)s')
 
-db.define_table('district',
-    Field('name', length=30, unique=True, notnull=True),
-    format = '%(name)s')
-
-db.define_table('subCounty',
-    Field('name', length=30, notnull=True),
-    Field('district', 'reference district'),
-    format = lambda r: (r.district, r.name))
-
-db.define_table('parish',
-    Field('name', length=30, notnull=True),
-    Field('subCounty', 'reference subCounty'),
-    format = lambda r: (r.subCounty, r.name))
-
-db.define_table('village',
-    Field('name', length=30, notnull=True),
-    Field('parish', 'reference parish'),
-    format = lambda r: (r.parish, r.name))
-
 db.define_table('shift',
     Field('station', 'reference facility'),
     Field('ambulance', 'reference ambulance'),
@@ -119,6 +100,23 @@ db.define_table('shift',
     Field('start_mileage', 'integer'),
     Field('end_mileage', 'integer'),
     format = lambda r : '%s on %s at %s' % (r.station.name, r.date, r.start_time))
+
+def location_format(r):
+   if not r.parent:
+       return r.name
+   parent = location_format(db.location[r.parent])
+   return '%s/%s' % (parent, r.name)
+    
+db.define_table('location',
+    Field('name', length=30, notnull=True),
+    Field('parent', 'reference location'),
+    Field('type', 'integer', requires=IS_INT_IN_RANGE(1, 5)),
+    format = location_format)
+#                                     IS_IN_SET({1:'district',2:'sub-county', 
+#                                      3:'parish', 4:'village'})]),
+
+db.location.parent.requires = IS_EMPTY_OR(
+                    IS_IN_DB(db, 'location.id', db.location._format))
 
 db.define_table('journey',
     Field('shift', 'reference shift'),

@@ -3,47 +3,38 @@
 #import widgets
 
 # fields listed child first
-def buildSelect(fields, value, wrapper):
-    if len(fields) == 0: return str(value)
-    field = fields[0]
-    parentValue = ''
-    requires = field.requires
-    options = []
-    for (k, v) in requires.options(True):
-        optClass = 'static'
-        if isinstance(v, tuple):
-            optClass = 'sub_' + str(v[0])
-            if k == str(value):
-                parentValue = v[0]
-            v = v[1]
-        options.append(OPTION(v, _value=k, _class=optClass))
-
-    r = buildSelect(fields[1:], parentValue, wrapper)
-    r = r + "/" + str(value)
-    
-    attr = FormWidget._attributes(field, {'value': value})
-    wrapper.append(SELECT(*options, **attr))
-    return r
+def buildSelect(value, depth, typeField, wrapper):
+    if depth==0: return
+    parentValue = None
+    options = [OPTION('', _value=0, _class='static')]
+    rows = db(typeField == depth).select()
+    for row in rows:
+        k = row.id
+        optClass = 'sub_' + str(row.parent)
+        options.append(OPTION(row.name, _value=k, _class=optClass))
+        if k == value:
+            parentValue = row.parent
+    buildSelect(parentValue, depth-1, typeField, wrapper)
+    wrapper.append(SELECT(*options))
+    return 
 
 class CascadingSelect(FormWidget):
-    def __init__(self, parents):
-        self.parents = parents
+    def __init__(self, depth, typeField):
+        self.depth = depth
+        self.typeField = typeField
         
     def widget(self, field, value, **attributes):
         tableId = '%s_%s_cascade' % (field._tablename, field.name)
         wrapper = TABLE(_id = tableId)
-        fields = [ field ] + self.parents
-        r = buildSelect(fields, value, wrapper)
-        wrapper.append(XML("r = " + r))
+        buildSelect(value, self.depth, self.typeField, wrapper)
         return wrapper
-
+      
 def index():
-    cascadeWidget=CascadingSelect([db.village.parish,
-                        db.parish.subCounty, db.subCounty.district])
+    cascadeWidget=CascadingSelect(4, db.location.type)
     form = SQLFORM.factory(
         Field('village',
-              requires=IS_IN_DB(db, 'village.id', db.village._format),
-              widget=cascadeWidget.widget,
+              requires=IS_IN_DB(db, 'location.id', db.location._format),
+#              widget=cascadeWidget.widget,
               default=3))
     if form.process().accepted:
         response.flash = 'form accepted'
@@ -51,3 +42,11 @@ def index():
         response.flash = 'form has errors'
     response.files.append(URL('static', 'js/cascade.js'))
     return dict(form=form)
+
+def add():
+   form = SQLFORM(db.location)
+   if form.accepts(request):
+      response.flash = 'Added'
+   elif form.errors:
+      response.flash = 'form has errors'
+   return dict(form=form)
