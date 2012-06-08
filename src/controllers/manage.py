@@ -13,39 +13,39 @@ return the grid for the specified table
                         details=False, searchable=False, ui='jquery-ui',
                         maxtextlength=30, maxtextlengths={'condition.title': 80,
                                                           'action.name' : 80})
-    return dict(grid=grid)
+    return {'grid' : grid }
 
-def link_locations(r):
-    return A('show next level', _href=URL('location',
-                                          vars=dict(parentid = r.id)))
-
+locplurals = ['districts', 'sub-counties', 'parishes', 'villages']
+locnames = ['district', 'sub-county', 'parish', 'village']
+            
 def location():
     """
 return the grid for the specified table
     """
-    if not session.location_ids:
-        session.location_ids = [None]
-        session.loctype = 0
-    if request.vars.back:
-        session.loctype = session.loctype - 1
-    if request.vars.parentid:
-        session.location_ids[session.loctype] = request.vars.parentid
-        session.loctype = session.loctype + 1
-    loctype = session.loctype
-    parentid = session.location_ids[loctype]
     # add a link back to the previous level results
     backlink = ''
-    if loctype > 0:
-        backlink = A('return to previous list', _href=URL('location',
-                            vars=dict(back = 'y')))
-
+#        backlink = A('return to previous list', _href=URL('location',
+#                            vars=dict(back = 'y')))
+    nargs = 0
+    parentid = None
+    while len(request.args)>nargs:
+        key = request.args(nargs)
+        if not key.startswith('_'):
+            break
+        parentid = key[1:]
+        nargs += 1
+        
     # now find the parent name
     parentname = ''
-    if parentid:
-        parentname = db.location[parentid]._format()
-    
+#        parentname = db.location[parentid]._format()
+    links = []
+    if nargs<3:
+        links.append(lambda row : A(locplurals[nargs+1],
+                _href=URL(args=request.args[:nargs] + ['_' + str(row.id)])))
     query = (db.location.parent == parentid)
     db.location.id.readable = False # supress display of id column
-    grid = SQLFORM.grid(query, fields=[db.location.id, db.location.name], details=False, searchable=False,
-                        ui='jquery-ui', links=[link_locations])
+    grid = SQLFORM.grid(query, args=request.args[:nargs],
+                        fields=[db.location.id, db.location.name],
+                        details=False, searchable=False,
+                        ui='jquery-ui', links=links)
     return { 'back': backlink, 'parentname': parentname, 'grid': grid}
