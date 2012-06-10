@@ -22,30 +22,40 @@ def location():
     """
 return the grid for the specified table
     """
-    # add a link back to the previous level results
-    backlink = ''
-#        backlink = A('return to previous list', _href=URL('location',
-#                            vars=dict(back = 'y')))
     nargs = 0
     parentid = None
+    breadcrumbs = []
+    # find last id in args - they start with underscore
+    # build breadcrumbs list as we go
     while len(request.args)>nargs:
         key = request.args(nargs)
         if not key.startswith('_'):
             break
         parentid = key[1:]
+        name = db.location(parentid).name
+        breadcrumbs += [A(name, _href=URL(args=request.args[:nargs])), ' > ']
         nargs += 1
-        
-    # now find the parent name
-    parentname = ''
-#        parentname = db.location[parentid]._format()
+
+    # ensure new locations have the correct parent and type
+    db.location.parent.default = parentid
+    db.location.type.default = nargs + 1
+    
+    # now define the header
+    loctype = locplurals[nargs]
+
     links = []
     if nargs<3:
         links.append(lambda row : A(locplurals[nargs+1],
                 _href=URL(args=request.args[:nargs] + ['_' + str(row.id)])))
     query = (db.location.parent == parentid)
     db.location.id.readable = False # supress display of id column
+    db.location.parent.readable = False # supress display of parent
+    db.location.parent.writable = False
+    db.location.type.readable = False # supress display of type
+    db.location.type.writable = False
     grid = SQLFORM.grid(query, args=request.args[:nargs],
                         fields=[db.location.id, db.location.name],
                         details=False, searchable=False,
                         ui='jquery-ui', links=links)
-    return { 'back': backlink, 'parentname': parentname, 'grid': grid}
+    return { 'breadcrumbs': DIV(*breadcrumbs), 'heading': loctype,
+             'content': grid}

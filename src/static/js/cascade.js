@@ -10,3 +10,12 @@ function cascadeSelect(parent, child){
 
     childOptions.not('.static, .sub_' + parent.val()).remove();
 }
+
+function createCascade(container, depth, baseid) {
+    var parent = container.find('#' + baseid + 1);
+    for (var level = 2; level <= depth; level++) {
+        child = container.find('#' + baseid + level)
+        cascadeSelect(parent, child);
+        parent = child;
+    }
+}

@@ -112,8 +112,6 @@ db.define_table('location',
     Field('parent', 'reference location'),
     Field('type', 'integer', requires=IS_INT_IN_RANGE(1, 5)),
     format = location_format)
-#                                     IS_IN_SET({1:'district',2:'sub-county', 
-#                                      3:'parish', 4:'village'})]),
 
 db.location.parent.requires = IS_EMPTY_OR(
                     IS_IN_DB(db, 'location.id', db.location._format))
@@ -127,7 +125,10 @@ db.define_table('journey',
     Field('maternity', 'boolean', default=False),
     Field('used_stretcher', 'boolean'),
     Field('used_cycle', 'boolean'),
-#    Field('start_location', length=30),
+    Field('patient_location', 'reference location', requires=IS_EMPTY_OR(
+                    IS_IN_DB(db, 'location.id', db.location._format)),
+                    represent=lambda id, row:
+                        id != None and location_format(db.location[id]) or ''),
     Field('call_time', 'time', comment='time of callout'),
     Field('dispatch_time', 'time', comment='time vehicle leaves HC'),
     Field('arrival_time', 'time', comment='time vehicle arrives at patient'),
@@ -139,3 +140,4 @@ db.define_table('journey',
     Field('facility', 'reference facility', comment='name of HC or Hospital'),
     Field('outcome', length=120),
     Field('notes', 'text'))
+
