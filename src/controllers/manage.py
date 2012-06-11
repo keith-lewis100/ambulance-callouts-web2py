@@ -33,8 +33,8 @@ return the grid for the specified table
             break
         parentid = key[1:]
         name = db.location(parentid).name
-        breadcrumbs += [A(name, _href=URL(args=request.args[:nargs])), ' > ']
         nargs += 1
+        breadcrumbs += [A(name, _href=URL(args=request.args[:nargs])), ' > ']
 
     # ensure new locations have the correct parent and type
     db.location.parent.default = parentid
