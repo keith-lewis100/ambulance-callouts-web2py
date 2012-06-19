@@ -1,3 +1,5 @@
+import datetime
+
 def index():
     form = SQLFORM.factory(
         Field('start_date', 'date', requires=IS_DATE()),
@@ -18,11 +20,33 @@ def index():
         response.flash = 'form has errors'
     return dict(form=form)    
 
-def journeys_by_condition(query):
+def month_of_date(date):
+    return date.year * 12 + date.month
+
+def journeys_by_condition(query, start_month, end_month):
     count = db.journey.id.count()
-    rows = db(query).select(db.shift.date, db.journey.condition, count,
+    records = db(query).select(db.shift.date, db.journey.condition, count,
                             groupby=db.shift.date|db.journey.condition)
-    return rows.as_list()
+    count_map = {}
+    for record in records:
+        key = (month_of_date(record.shift.date), record.journey.condition)
+        if not count_map.has_key(key):
+            count_map[key] = 0
+        count_map[key] += record[count]
+    headers = [TD('')]
+    for month in range(start_month, end_month + 1):
+        date = datetime.date(month/12, month % 12, 1)
+        headers.append(TD(date.strftime("%B %y")))
+    table = [headers ]
+    for cond in db(db.condition.id > 0).select():
+        row = [cond.title]
+        for month in range(start_month, end_month + 1):
+            val = 0
+            if count_map.has_key((month, cond.id)):
+                val = count_map[(month, cond.id)]
+            row.append(TD(val))
+        table.append(TR(*row))
+    return TABLE(TBODY(*table))
 
 def journeys_raw(query):
     rows = db(query).select(db.shift.date,
@@ -43,5 +67,10 @@ def report():
             (db.shift.date <= request.vars.end_date)
     if request.vars.station:
         query &= db.shift.station == int(request.vars.station)
-    table=journeys_raw(query)
+    start_month = month_of_date(datetime.datetime.strptime(request.vars.start_date,
+                                                       "%Y-%m-%d"))
+    end_month = month_of_date(datetime.datetime.strptime(request.vars.end_date,
+                                                     "%Y-%m-%d"))
+    table=journeys_by_condition(query, start_month, end_month)
+    
     return dict(table=table)
