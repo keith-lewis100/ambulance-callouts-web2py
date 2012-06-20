@@ -1,7 +1,8 @@
 {{
-import cStringIO
-stream=cStringIO.StringIO()
-table.export_to_csv_file(stream)
-response.headers['Content-Type']='application/vnd.ms-excel'
-response.write(stream.getvalue(), escape=False)
+import csv
+response.headers['Content-Type']='text/csv'
+response.headers['Content-Disposition']='attachment; filename=%s.csv' % filename
+writer = csv.writer(response)
+writer.writerows(table)
+response.write(table)
 }}

@@ -7,7 +7,8 @@ def index():
         Field('station',
               requires=IS_EMPTY_OR(IS_IN_DB(db, 'facility.id',
                                             db.facility._format))),
-        Field('format', default='html', requires=IS_IN_SET(['html', 'csv', 'ods'])))
+        Field('format', default='csv',
+              requires=IS_IN_SET(['html', 'csv', 'ods'])))
 
     if form.process().accepted:
         response.flash = 'report launched'
@@ -33,20 +34,20 @@ def journeys_by_condition(query, start_month, end_month):
         if not count_map.has_key(key):
             count_map[key] = 0
         count_map[key] += record[count]
-    headers = [TD('')]
+    headers = ['Condition']
     for month in range(start_month, end_month + 1):
         date = datetime.date(month/12, month % 12, 1)
-        headers.append(TD(date.strftime("%B %y")))
-    table = [headers ]
+        headers.append(date.strftime("%B %y"))
+    table = [headers]
     for cond in db(db.condition.id > 0).select():
         row = [cond.title]
         for month in range(start_month, end_month + 1):
             val = 0
             if count_map.has_key((month, cond.id)):
                 val = count_map[(month, cond.id)]
-            row.append(TD(val))
-        table.append(TR(*row))
-    return TABLE(TBODY(*table))
+            row.append(val)
+        table.append(row)
+    return table
 
 def journeys_raw(query):
     rows = db(query).select(db.shift.date,
@@ -72,5 +73,4 @@ def report():
     end_month = month_of_date(datetime.datetime.strptime(request.vars.end_date,
                                                      "%Y-%m-%d"))
     table=journeys_by_condition(query, start_month, end_month)
-    
-    return dict(table=table)
+    return dict(table=table, filename='report')
