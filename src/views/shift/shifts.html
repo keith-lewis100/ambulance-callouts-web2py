@@ -1,6 +1,13 @@
 {{extend 'layout.html'}}
 
 <h2>Shifts</h2>
-Ambulance : {{=ambulance}} on {{=date}}<br/>
-<a href="shifts?daydelta=-1">Previous Day</a> <a href="shifts?daydelta=1">Next Day</a>
+Ambulance centre: {{=station}} for week starting {{=date}}<br/>
+<a href="shifts?daydelta=-7">Previous Week</a> <a href="shifts?daydelta=7">Next Week</a>
 {{=grid}}
+{{if grid.create_form:}}
+<script>
+jQuery(document).ready(function(){
+   jQuery('#shift_ambulance__row').hide();
+});
+</script>
+{{pass}}

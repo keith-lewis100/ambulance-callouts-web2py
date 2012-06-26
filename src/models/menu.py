@@ -32,6 +32,9 @@ response.menu = [
            (T('Drivers'), False, URL('manage', 'table', args='driver'), []),
            (T('Facilities'), False, URL('manage', 'table', args='facility'), []),
            (T('Locations'), False, URL('manage', 'location'), [])]),
-    (T('Reports'), False, URL('report', 'index'), [])
+    (T('Reports'), True, '', [
+           (T('Journeys by condition and month'), False,
+                                  URL(c='report', args='journey_by_condition')),
+           (T('Journey Records'), False, URL(c='report', args='journey_records'))])
     ]
 

@@ -102,10 +102,10 @@ db.define_table('shift',
     format = lambda r : '%s on %s at %s' % (r.station.name, r.date, r.start_time))
 
 def location_format(r):
-   if not r.parent:
+#   if not r.parent:
        return r.name
-   parent = location_format(db.location[r.parent])
-   return '%s/%s' % (parent, r.name)
+#   parent = location_format(db.location[r.parent])
+#   return '%s/%s' % (parent, r.name)
     
 db.define_table('location',
     Field('name', length=30, notnull=True),
@@ -121,23 +121,32 @@ db.define_table('journey',
     Field('family_name', length=30, notnull=True),
     Field('given_name', length=30, notnull=True),
     Field('age', 'integer', requires=IS_INT_IN_RANGE(0, 121)),
-    Field('sex', requires=IS_IN_SET(['Male','Female']), widget=SQLFORM.widgets.radio.widget),
-    Field('maternity', 'boolean', default=False),
+    Field('sex', requires=IS_IN_SET(['Male','Female']),
+          widget=SQLFORM.widgets.radio.widget),
+    Field('pregnant', 'boolean', default=False),
     Field('used_stretcher', 'boolean'),
     Field('used_cycle', 'boolean'),
     Field('patient_location', 'reference location', requires=IS_EMPTY_OR(
                     IS_IN_DB(db, 'location.id', db.location._format)),
                     represent=lambda id, row:
-                        id != None and location_format(db.location[id]) or ''),
-    Field('call_time', 'time', comment='time of callout'),
-    Field('dispatch_time', 'time', comment='time vehicle leaves HC'),
-    Field('arrival_time', 'time', comment='time vehicle arrives at patient'),
-    Field('hc_time', 'time', notnull=True, comment='time patient arrives at facility'),
+                        id != None and id != 0 and
+                            location_format(db.location[id]) or ''),
+    Field('call_time', 'time',
+          comment='time of callout'),
+    Field('dispatch_time', 'time', required=True,
+          comment='time vehicle leaves HC'),
+    Field('arrival_time', 'time',
+          comment='time vehicle arrives at patient'),
+    Field('hc_time', 'time', required=True,
+          comment='time patient arrives at facility'),
     Field('condition', 'reference condition', comment='patient condition'),
     Field('amb_action', 'reference action', comment='action by driver',
                 requires=IS_EMPTY_OR(IS_IN_DB(db, 'action.id', db.action._format)),
                 represent=lambda id, row: id != None and db.action[id].name or ''),
-    Field('facility', 'reference facility', comment='name of HC or Hospital'),
-    Field('outcome', length=120),
+    Field('facility', 'reference facility',
+          comment='name of destination HC or Hospital'),
+    Field('condition_hc', 'reference condition', comment='patient condition',
+                requires=IS_EMPTY_OR(IS_IN_DB(db, 'condition.id', db.condition._format)),
+                represent=lambda id, row: id != None and db.condition[id].title or ''),   
     Field('notes', 'text'))
 

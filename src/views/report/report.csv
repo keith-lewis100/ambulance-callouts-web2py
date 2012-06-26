@@ -1,7 +1,11 @@
 {{
 import csv
+import cStringIO
+
 response.headers['Content-Type']='text/csv'
-response.headers['Content-Disposition']='attachment; filename=%s.csv' % filename
-writer = csv.writer(response)
+response.headers['Content-Disposition']='attachment; filename=%s.csv' % report
+stream = cStringIO.StringIO()
+writer = csv.writer(response, dialect=csv.excel)
 writer.writerows(table)
+response.write(stream.getvalue(), escape=False)
 }}

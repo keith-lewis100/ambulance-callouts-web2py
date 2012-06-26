@@ -38,8 +38,8 @@ function web2py_ajax_init() {
 	      format: datetime_format.replace('%M','%i')});
       jQuery("input.date").AnyTime_picker({
 	      format: date_format.replace('%M','%i')});
-      jQuery("input.time").AnyTime_picker({
-	      format: "%H:%i:%S"});
+//      jQuery("input.time").AnyTime_picker({
+//	      format: "%H:%i"});
   } catch(e) {};
 };
 

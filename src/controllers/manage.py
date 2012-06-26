@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+@auth.requires_login()
 def table():
     """
 return the grid for the specified table
@@ -24,7 +25,7 @@ return the grid for the specified table
     """
     nargs = 0
     parentid = None
-    breadcrumbs = []
+    breadcrumbs = [A('All Districts', _href=URL('location')), ' > ']
     # find last id in args - they start with underscore
     # build breadcrumbs list as we go
     while len(request.args)>nargs:

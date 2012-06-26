@@ -3,13 +3,14 @@
 #from widgets import CascadingSelect
 
 class CascadingSelect(FormWidget):
-    def __init__(self, depth, typeField):
-        self.depth = depth
+    def __init__(self, typeField, labels):
+        self.labels = labels
         self.typeField = typeField
 
     def buildSelect(self, loctype, value, baseid):
         dbconn = self.typeField._table._db
-        options = [OPTION('', _value='', _class='static')]
+        null_option = "Select " + self.labels[loctype-1]
+        options = [OPTION(null_option, _value='', _class='static')]
         rows = dbconn(self.typeField == loctype).select()
         for row in rows:
             k = row.id
@@ -23,14 +24,15 @@ class CascadingSelect(FormWidget):
     def createScript(self, baseid):
         js = "$(function(){"
         js += "cascadeTable = $('#%stable');" % baseid
-        js += "createCascade(cascadeTable, %s, '%s');" % (self.depth, baseid)
+        js += "createCascade(cascadeTable, %s, '%s');" % (len(self.labels), baseid)
         js += "});"
         return SCRIPT(js, _type="text/javascript")
         
     def buildValueList(self, table, value):
-        values = [None] * self.depth
+        depth = len(self.labels)
+        values = [None] * depth
         v = value
-        for loctype in range(self.depth-1, -1, -1):
+        for loctype in range(depth-1, -1, -1):
             values[loctype] = v
             row = table(v)
             if row == None: break
@@ -41,7 +43,7 @@ class CascadingSelect(FormWidget):
         baseid = '%s_%s_' % (field._tablename, field.name)
         table = TABLE(_id = baseid + 'table')
         values = self.buildValueList(self.typeField._table, value)
-        for loctype in range(1, self.depth+1):
+        for loctype in range(1, len(values)+1):
             select = self.buildSelect(loctype, values[loctype-1], baseid)
             table.append(select)
         select.update(_name=field.name) # ensure last select uses field name
@@ -63,11 +65,13 @@ return the journey table or edit/create form
     # now find the shift name
     r = db.shift[session.shift]
     shiftname = '%s on %s at %s' % (r.station.name, r.date, r.start_time)
-
+    
     # create the grid
     query = (db.journey.shift == session.shift)
     db.journey.shift.default = session.shift
-    cascadeWidget = CascadingSelect(4, db.location.type)
+    db.journey.facility.default = r.station
+    cascadeWidget = CascadingSelect(db.location.type,
+            ['district', 'sub-county', 'parish', 'village'])
     db.journey.patient_location.widget = cascadeWidget.widget
     can_modify = auth.has_membership(role='journey_editor')
     grid = SQLFORM.grid(query, 
