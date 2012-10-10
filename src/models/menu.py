@@ -34,7 +34,8 @@ response.menu = [
            (T('Locations'), False, URL('manage', 'location'), [])]),
     (T('Reports'), True, '', [
            (T('Journeys by condition and month'), False,
-                                  URL(c='report', args='journey_by_condition')),
-           (T('Journey Records'), False, URL(c='report', args='journey_records'))])
+                    URL('report', 'index', args='journey_by_condition')),
+           (T('Journey Records'), False,
+                    URL('report', 'index', args='journey_records'))])
     ]
 
