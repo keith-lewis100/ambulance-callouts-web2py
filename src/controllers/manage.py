@@ -10,8 +10,10 @@ return the grid for the specified table
                        'facility']:
        return "invalid table"
     table = db[table_name]
+    can_modify = auth.has_membership(role='resource_editor')
     grid = SQLFORM.grid(table.id > 0, args=request.args[:1],
                         details=False, searchable=False, ui='jquery-ui',
+                        create=can_modify, editable=can_modify, deletable=can_modify,
                         maxtextlength=30, maxtextlengths={'condition.title': 80,
                                                           'action.name' : 80})
     return {'grid' : grid }
@@ -54,8 +56,10 @@ return the grid for the specified table
     db.location.parent.writable = False
     db.location.type.readable = False # supress display of type
     db.location.type.writable = False
+    can_modify = auth.has_membership(role='resource_editor')
     grid = SQLFORM.grid(query, args=request.args[:nargs],
                         fields=[db.location.id, db.location.name],
+                        create=can_modify, editable=can_modify, deletable=can_modify,
                         details=False, searchable=False,
                         ui='jquery-ui', links=links)
     return { 'breadcrumbs': DIV(*breadcrumbs), 'heading': loctype,

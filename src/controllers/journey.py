@@ -51,6 +51,7 @@ class CascadingSelect(FormWidget):
         wrapper = DIV([table, js])
         return wrapper
 
+@auth.requires_membership('journey_editor')
 def journey():
     """
 return the journey table or edit/create form
@@ -73,13 +74,11 @@ return the journey table or edit/create form
     cascadeWidget = CascadingSelect(db.location.type,
             ['district', 'sub-county', 'parish', 'village'])
     db.journey.patient_location.widget = cascadeWidget.widget
-    can_modify = auth.has_membership(role='journey_editor')
     grid = SQLFORM.grid(query, 
                             fields=[db.journey.id, db.journey.dispatch_time,
                                     db.journey.family_name, db.journey.age,
                                     db.journey.condition, db.journey.facility], 
-                            create=can_modify, editable=can_modify, deletable=can_modify, 
-                            csv=False, searchable=False, ui='jquery-ui')
+                             csv=False, searchable=False, ui='jquery-ui')
     response.files.append(URL('static', 'js/cascade.js'))
     # return values to render in the view
     return dict(back=shiftlink, shift=shiftname, grid=grid)

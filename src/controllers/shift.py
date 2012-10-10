@@ -47,8 +47,13 @@ return the shift table or edit/create form
     if len(request.args)>1 and request.args[-2]=='new' and request.vars.station:
         request.vars.ambulance = db.facility[int(request.vars.station)].stationed_ambulance
 
+    can_modify = auth.has_membership(role='journey_editor')
+    links = []
+    if can_modify:
+        links=[link_journeys]
     grid = SQLFORM.grid(query, fields=[db.shift.id, db.shift.date, db.shift.start_time, 
                  db.shift.station, db.shift.driver], csv=False,
-                 searchable=False, ui='jquery-ui', links=[link_journeys],
+                 searchable=False, ui='jquery-ui', links=links,
+                 create=can_modify, editable=can_modify, deletable=can_modify,
                  sortable=True)
     return dict(station=stationname,date=session.date,grid=grid)
