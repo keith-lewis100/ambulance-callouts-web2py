@@ -2,11 +2,11 @@ import datetime
 
 class Month:
     def __init__(self, date):
-        self.index = 12*date.year + date.month
+        self.index = 12*date.year + date.month - 1
 
     def __add__(self, offset):
         m = self.index + offset
-        date = datetime.date(m / 12, m % 12, 1)
+        date = datetime.date(m / 12, m % 12 + 1, 1)
         return Month(date)
 
     def __cmp__(self, other):
@@ -16,7 +16,7 @@ class Month:
         return self.index
 
     def strf(self, format):
-        date = datetime.date(self.index/12, self.index % 12, 1)
+        date = datetime.date(self.index/12, self.index % 12 + 1, 1)
         return date.strftime(format)
     
 class MonthRange:
@@ -55,6 +55,7 @@ def index():
     return dict(form=form)    
 
 def journeys_by_condition(query, start_month, end_month):
+    months = MonthRange(start_month, end_month + 1)
     count = db.journey.id.count()
     records = db(query).select(db.shift.date, db.journey.condition, count,
                             groupby=db.shift.date|db.journey.condition)
@@ -63,21 +64,34 @@ def journeys_by_condition(query, start_month, end_month):
         key = (Month(record.shift.date), record.journey.condition)
         if not count_map.has_key(key):
             count_map[key] = 0
-        count_map[key] += record[count]
+        val = record[count]
+        count_map[key] += val
+    return render_table(count_map, months)
+
+def render_table(count_map, cols):
     headers = ['Condition']
-    for month in MonthRange(start_month, end_month + 1):
-        headers.append(month.strf("%B %y"))
+    for col in cols:
+        headers.append(col.strf("%B %y"))
+    headers.append('total')
     table = [headers]
     for cond in db(db.condition.id > 0).select():
-        row = [cond.title]
-        for month in MonthRange(start_month, end_month + 1):
-            val = 0
-            if count_map.has_key((month, cond.id)):
-                val = count_map[(month, cond.id)]
-            row.append(val)
+        row = render_row(cond.title, cond.id, count_map, cols)
         table.append(row)
+#    totals_row = render_row('totals', None, count_map, cols)
     return table
 
+def render_row(label, rowid, count_map, cols):
+    row = [label]
+    total = 0
+    for col in cols:
+        val = 0
+        if count_map.has_key((col, rowid)):
+            val = count_map[(col, rowid)]
+        row.append(val)
+        total += val
+    row.append(total)
+    return row
+    
 def journeys_raw(query):
     records = db(query).select(db.shift.date,
                          db.shift.station,
