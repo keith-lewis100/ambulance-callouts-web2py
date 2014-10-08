@@ -13,7 +13,7 @@ return the grid for the specified table
     can_modify = auth.has_membership(role='resource_editor')
     grid = SQLFORM.grid(table.id > 0, args=request.args[:1],
                         details=False, searchable=False, ui='jquery-ui',
-                        create=can_modify, editable=can_modify, deletable=can_modify,
+                        create=can_modify, editable=can_modify, deletable=False,
                         maxtextlength=30, maxtextlengths={'condition.title': 80,
                                                           'action.name' : 80})
     return {'grid' : grid }
