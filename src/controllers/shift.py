@@ -2,11 +2,14 @@ from datetime import timedelta
 
 @auth.requires_login()
 def index():
+    # stations are facilities with an ambulance
+    stations = db(db.facility.stationed_ambulance != None).select()
+    station_set = [ (s.id, s.name) for s in stations ]
     form = SQLFORM.factory(
         Field('date', 'date', requires=IS_DATE(), comment='date in week'),
         Field('station', default=session.station, comment='leave blank unless only interested in one station',
-              requires=IS_EMPTY_OR(IS_IN_DB(db, 'facility.id',
-                                            db.facility._format))))
+              requires=IS_EMPTY_OR(IS_IN_SET(station_set,
+                     error_message='must be a facility with an ambulance'))))
 
     if form.process().accepted:
         response.flash = 'search started'
