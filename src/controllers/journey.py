@@ -70,6 +70,8 @@ return the journey table or edit/create form
     # create the grid
     query = (db.journey.shift == session.shift)
     db.journey.shift.default = session.shift
+    db.journey.shift.writable = False
+    db.journey.shift.readable = False
     db.journey.facility.default = r.station
     cascadeWidget = CascadingSelect(db.location.type,
             ['district', 'sub-county', 'parish', 'village'])
