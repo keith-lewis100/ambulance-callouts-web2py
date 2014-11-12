@@ -4,4 +4,6 @@
 The last shift entered was on <b>{{=lastshift}}</b><br/>
 The total number of journeys entered is <b>{{=total}}</b><br/>
 The number of journeys in the last 30 days is <b>{{=recent}}</b><br/>
-
+{{if request.is_local:}}
+{{=response.toolbar()}}
+{{pass}}

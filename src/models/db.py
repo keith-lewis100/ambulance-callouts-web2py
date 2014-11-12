@@ -63,9 +63,25 @@ auth.settings.actions_disabled.append('register')
 ## >>> for row in rows: print row.id, row.myfield
 #########################################################################
 
+db.define_table('action',
+    Field('name', length=80, unique=True, notnull=True),
+    format = '%(name)s')
+
 db.define_table('ambulance',
     Field('registration', length=30, unique=True, notnull=True),
     format = '%(registration)s')
+
+db.define_table('condition',
+    Field('title', length=80, unique=True, notnull=True),
+    format = '%(title)s')
+
+db._common_fields.append(Field('request_tenant',
+                               default=request.env.http_host,
+                               writable=False))
+
+db.define_table('driver',
+    Field('name', length=30, unique=True, notnull=True),
+    format = '%(name)s')
 
 db.define_table('facility',
     Field('name', length=30, unique=True, notnull=True),
@@ -74,22 +90,6 @@ db.define_table('facility',
                   represent=lambda id, row: id != None and db.ambulance[id].registration or ''),
     format = '%(name)s')
     
-db.define_table('condition',
-    Field('title', length=80, unique=True, notnull=True),
-    format = '%(title)s')
-
-#db.define_table('clinician',
-#    Field('name', length=80, unique=True, notnull=True),
-#    format = '%(name)s')
-
-db.define_table('driver',
-    Field('name', length=30, unique=True, notnull=True),
-    format = '%(name)s')
-
-db.define_table('action',
-    Field('name', length=80, unique=True, notnull=True),
-    format = '%(name)s')
-
 db.define_table('shift',
     Field('station', 'reference facility', ondelete='NO ACTION'),
     Field('ambulance', 'reference ambulance', ondelete='NO ACTION'),

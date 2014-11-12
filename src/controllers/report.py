@@ -57,7 +57,10 @@ def index():
 def journeys_by_condition(query, start_month, end_month):
     months = MonthRange(start_month, end_month + 1)
     count = db.journey.id.count()
-    records = db(query).select(db.shift.date, db.journey.condition, count,
+    records = db(query, ignore_common_filters=True).select(
+                            db.shift.date,
+                            db.journey.condition,
+                            count,
                             groupby=db.shift.date|db.journey.condition)
     count_map = {}
     for record in records:
@@ -93,8 +96,9 @@ def render_row(label, rowid, count_map, cols):
     return row
     
 def journeys_raw(query):
-    records = db(query).select(db.shift.date,
+    records = db(query, ignore_common_filters=True).select(db.shift.date,
                          db.shift.station,
+                         db.shift.request_tenant,
                          db.journey.age,
                          db.journey.sex,
                          db.journey.used_stretcher,
@@ -102,7 +106,13 @@ def journeys_raw(query):
                          db.journey.pregnant,
                          db.journey.condition,
                          db.journey.amb_action,
-                         db.journey.facility, orderby=db.shift.date)
+                         db.journey.facility,
+                         db.journey.condition_hc,
+                         db.journey.call_time,
+                         db.journey.dispatch_time,
+                         db.journey.arrival_time,
+                         db.journey.hc_time,
+                         orderby=db.shift.date)
     table = [ records.colnames ]
     for record in records:
         row = []
