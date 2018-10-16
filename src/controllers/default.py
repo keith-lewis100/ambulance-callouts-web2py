@@ -4,14 +4,13 @@ from datetime import date, timedelta
 @auth.requires_login()
 def index():
     # find the last date for a shift
-#    max = db.shift.date.max()
-#    r = db().select(db.shift.station, max).first()
-#    l = r[max] and r[max].strftime('%d %B %Y') or "None"
-    l = "None"
+    max = db.shift.date.max()
+    r = db().select(max).first()
+    l = r[max].strftime('%d %B %Y') if r else 'None'
     # total journeys entered
     count = db.journey.id.count()
     r = db(db.journey.id > 0).select(count).first()
-    total = r[count]  
+    total = r[count]
     # count journeys for the last 30 days
     end_date = date.today();
     start_date = end_date - timedelta(30)
