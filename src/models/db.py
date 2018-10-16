@@ -75,9 +75,10 @@ db.define_table('condition',
     Field('title', length=80, unique=True, notnull=True),
     format = '%(title)s')
 
-db._common_fields.append(Field('request_tenant',
-                               default=request.env.http_host,
-                               writable=False))
+if request.controller != 'appadmin':
+    db._common_fields.append(Field('request_tenant',
+                                       default='iers.pont-mbale.org.uk',
+                                       writable=False))
 
 db.define_table('driver',
     Field('name', length=30, unique=True, notnull=True),
